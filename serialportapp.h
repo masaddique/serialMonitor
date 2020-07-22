@@ -2,17 +2,10 @@
 #define SERIALPORTAPP_H
 
 #include <QMainWindow>
-#include <cstdio>
-#include <string>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <cstring>
-#include <fstream>
 #include <QDir>
 #include <QMessageBox>
-#include <termios.h>
-#include <fcntl.h>
+#include "serialobject.h"
+
 
 namespace Ui {
 class serialPortApp;

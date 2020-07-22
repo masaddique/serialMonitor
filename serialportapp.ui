@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Close</string>
+     <string>Exit</string>
     </property>
    </widget>
    <widget class="QPushButton" name="portOpenBtn">
@@ -106,7 +106,7 @@
     </property>
     <item>
      <property name="text">
-      <string>1.5</string>
+      <string>1</string>
      </property>
     </item>
     <item>
@@ -199,6 +199,16 @@
       <y>10</y>
       <width>85</width>
       <height>27</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="mainData">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>60</y>
+      <width>891</width>
+      <height>211</height>
      </rect>
     </property>
    </widget>
