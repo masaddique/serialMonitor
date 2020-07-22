@@ -120,5 +120,6 @@ void serialObject::run() {
         if (dataready!=-1) {
             emit(dataReady(data));
         }
+        tcflush(serialNum,TCIFLUSH);
     }
 }

@@ -60,6 +60,7 @@ void serialPortApp::showEvent(QShowEvent *) {
         ui->portCombo->addItem(ser);
     }
     ui->mainData->clear();
+    ui->mainData->setPlainText(QString("This is text"));
 }
 
 void serialPortApp::closeEvent(QCloseEvent *) {
@@ -68,5 +69,9 @@ void serialPortApp::closeEvent(QCloseEvent *) {
 
 void serialPortApp::printResults(const char* data)
 {
-    printf("Data From Main: %s\n",data);
+    //printf("Data From Main: %s\n",data);
+    //QMessageBox::information(this,"info",data,QMessageBox::Ok);
+    QString dd = ui->mainData->toPlainText() + QString(data);
+    ui->mainData->setPlainText(dd);
+
 }
