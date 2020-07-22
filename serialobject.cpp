@@ -3,11 +3,14 @@
 
 serialObject::serialObject()
 {
+    //QThread::QThread();
     //QMessageBox::information(this,"Info","Never use this again", QMessageBox::Ok);
 }
 
 serialObject::serialObject(const char *port,int baud, int parity, int stopbits)
 {
+    //QThread::QThread();
+    //editBox = edit;
     serialNum = open(port, O_RDWR|O_NOCTTY|O_NDELAY);
     if (serialNum == -1) {
         QMessageBox::warning(NULL, "Info",QString("Unable to open port") + QString(port), QMessageBox::Ok);
@@ -90,22 +93,32 @@ serialObject::serialObject(const char *port,int baud, int parity, int stopbits)
         QMessageBox::warning(NULL,"Info", "Cannot open port with desired configurations",QMessageBox::Ok);
     }
     tcflush(serialNum,TCIFLUSH);
-    printf("Port is open Now");
-
-    while (1) {
-        char read_buffer[32];
-        int bytes_read = 0;
-        bytes_read = read(serialNum,&read_buffer,32);
-        for (int i = 0; i < bytes_read;i++)
-        {
-            printf("%c",read_buffer[i]);
-        }
-    }
-
-    close(serialNum);
+    printf("Port is open %s",port);
+    //close(serialNum);
 }
 
 void serialObject::serialOpen()
 {
 
+}
+
+void serialObject::serialClose()
+{
+    close(serialNum);
+}
+
+void serialObject::serialSend() {
+    // do something
+}
+void serialObject::run() {
+    //QMessageBox::information(NULL,"info","Reached here",QMessageBox::Ok);
+    //QThread::run();
+    //QMessageBox::information(NULL,"info","This is running",QMessageBox::Ok);
+    while (1) {
+        char data[32];
+        int dataready = read(serialNum,&data,32);
+        if (dataready!=-1) {
+            emit(dataReady(data));
+        }
+    }
 }

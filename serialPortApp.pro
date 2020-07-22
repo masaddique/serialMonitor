@@ -20,3 +20,5 @@ HEADERS  += serialportapp.h \
     serialobject.h
 
 FORMS    += serialportapp.ui
+
+QMAKE_CXXFLAGS += -std=c++11

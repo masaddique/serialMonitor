@@ -33,8 +33,10 @@ void serialPortApp::on_portOpenBtn_clicked()
         ui->parityCombo->setEnabled(false);
         ui->stopCombo->setEnabled(false);
         ui->portOpenBtn->setText("Close");
-        serialObject* ser = new serialObject(serial.toStdString().c_str(),baud,parity,stop);
-
+        serialPort = new serialObject(serial.toStdString().c_str(),baud,parity,stop);
+        connect(serialPort,&serialObject::dataReady,this,&serialPortApp::printResults);
+        serialPort->moveToThread(serialThread);
+        serialPort->start();
     }
     else if (ui->portOpenBtn->text()=="Close") {
         ui->baudCombo->setEnabled(true);
@@ -42,11 +44,13 @@ void serialPortApp::on_portOpenBtn_clicked()
         ui->parityCombo->setEnabled(true);
         ui->stopCombo->setEnabled(true);
         ui->portOpenBtn->setText("Open");
+        serialPort->terminate();
+        serialPort->serialClose();
     }
-
 }
 
 void serialPortApp::showEvent(QShowEvent *) {
+    serialThread = new QThread();
     QDir devDir("/dev/");
     QStringList filter("tty*");
     QStringList serialsItems = devDir.entryList(filter,QDir::AllEntries|QDir::System);
@@ -60,4 +64,9 @@ void serialPortApp::showEvent(QShowEvent *) {
 
 void serialPortApp::closeEvent(QCloseEvent *) {
     //close(serialPortObject);
+}
+
+void serialPortApp::printResults(const char* data)
+{
+    printf("Data From Main: %s\n",data);
 }

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDir>
 #include <QMessageBox>
+#include <QThread>
 #include "serialobject.h"
 
 
@@ -25,13 +26,14 @@ protected:
 
 private slots:
     void on_exitBtn_clicked();
-
     void on_portOpenBtn_clicked();
+    void printResults(const char* data);
 
 private:
     Ui::serialPortApp *ui;
 
-    int serialPortObject;
+    serialObject* serialPort;
+    QThread* serialThread;
 };
 
 #endif // SERIALPORTAPP_H
