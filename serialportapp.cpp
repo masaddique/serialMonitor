@@ -106,6 +106,8 @@ void serialPortApp::showEvent(QShowEvent *) {
     //QMessageBox::information(this,"QT Version",QT_VERSION_STR);
     QDir devDir("/dev/");
     QStringList filter("tty*");
+    ui->dispASCII->setChecked(true);
+    ui->dispHEX->setChecked(false);
     QStringList serialsItems = devDir.entryList(filter,QDir::AllEntries|QDir::System);
     foreach (QString ser,serialsItems)
     {
@@ -113,6 +115,8 @@ void serialPortApp::showEvent(QShowEvent *) {
     }
     ui->mainData->clear();
     this->showMaximized();
+    tohex = false;
+    dispData.clear();
 }
 
 void serialPortApp::closeEvent(QCloseEvent *) {
@@ -124,10 +128,17 @@ void serialPortApp::closeEvent(QCloseEvent *) {
 void serialPortApp::printResults()
 {
     QByteArray infromSerial = port->readAll();
-    QString newData = ui->mainData->toPlainText() + QString::fromUtf8(infromSerial);
-    ui->mainData->setPlainText(newData);
+    dispData = dispData + QString::fromUtf8(infromSerial);
+    if (tohex) {
+        QByteArray hexArray = dispData.toUtf8().toHex();
+        QString hexData  = QString(hexArray.constData());
+        hexData.replace(QString("0a"),QString("0a\n"));
+        //QString disp = QString(hexArray.constData()) + QString("\nNewLine");
+        ui->mainData->setPlainText(hexData);
+    } else {
+        ui->mainData->setPlainText(dispData);
+    }
     ui->mainData->verticalScrollBar()->setValue(ui->mainData->verticalScrollBar()->maximum());
-
 }
 
 void serialPortApp::on_mainData_destroyed()
@@ -205,5 +216,25 @@ void serialPortApp::on_serialPortApp_destroyed()
 {
     if(port->isOpen()) {
         port->close();
+    }
+}
+
+void serialPortApp::on_dispASCII_toggled(bool checked)
+{
+    if (checked) {
+        tohex = false;
+    }
+    else {
+        tohex = true;
+    }
+}
+
+void serialPortApp::on_dispHEX_toggled(bool checked)
+{
+    if (checked) {
+        tohex = true;
+    }
+    else {
+        tohex = false;
     }
 }

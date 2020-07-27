@@ -47,11 +47,17 @@ private slots:
 
     void on_serialPortApp_destroyed();
 
+    void on_dispASCII_toggled(bool checked);
+
+    void on_dispHEX_toggled(bool checked);
+
 private:
     Ui::serialPortApp *ui;
     QSerialPort* port;
+    QString dispData; // this will store all the data to be displayed
     int selectedX;
     int selectedY;
+    bool tohex;
 };
 
 #endif // SERIALPORTAPP_H

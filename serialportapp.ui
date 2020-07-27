@@ -71,9 +71,9 @@
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>60</y>
+      <y>80</y>
       <width>690</width>
-      <height>401</height>
+      <height>380</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="dataLayout">
@@ -219,8 +219,8 @@
      <rect>
       <x>10</x>
       <y>60</y>
-      <width>30</width>
-      <height>40</height>
+      <width>31</width>
+      <height>50</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
@@ -245,7 +245,7 @@
      <rect>
       <x>10</x>
       <y>270</y>
-      <width>30</width>
+      <width>31</width>
       <height>50</height>
      </rect>
     </property>
@@ -261,6 +261,32 @@
       <widget class="QToolButton" name="removeOutput">
        <property name="text">
         <string>---</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>284</x>
+      <y>53</y>
+      <width>160</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QRadioButton" name="dispASCII">
+       <property name="text">
+        <string>ASCII</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="dispHEX">
+       <property name="text">
+        <string>HEX</string>
        </property>
       </widget>
      </item>
