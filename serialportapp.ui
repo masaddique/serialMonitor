@@ -271,8 +271,8 @@
      <rect>
       <x>284</x>
       <y>53</y>
-      <width>160</width>
-      <height>21</height>
+      <width>330</width>
+      <height>22</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -287,6 +287,13 @@
       <widget class="QRadioButton" name="dispHEX">
        <property name="text">
         <string>HEX</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="timeTicks">
+       <property name="text">
+        <string>Ticks</string>
        </property>
       </widget>
      </item>

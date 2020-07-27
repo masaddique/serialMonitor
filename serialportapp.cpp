@@ -88,16 +88,23 @@ void serialPortApp::on_portOpenBtn_clicked()
             ui->stopCombo->setEnabled(false);
             ui->portOpenBtn->setText("Close");
             connect(port,&QSerialPort::readyRead,this,&serialPortApp::printResults);
+            ui->statusBar->showMessage(serial + QString(" opened on ") + QTime::currentTime().toString("hh:mm:ss"));
+        }
+        else {
+            ui->statusBar->showMessage(serial + QString(" unavailable last try") + QTime::currentTime().toString("hh:mm:ss"));
         }
     }
     else if (ui->portOpenBtn->text()=="Close") {
-        ui->baudCombo->setEnabled(true);
-        ui->portCombo->setEnabled(true);
-        ui->parityCombo->setEnabled(true);
-        ui->stopCombo->setEnabled(true);
-        ui->portOpenBtn->setText("Open");
         port->close();
-        disconnect(port,&QSerialPort::readyRead,this,&serialPortApp::printResults);
+        if (!port->isOpen()) {
+            ui->baudCombo->setEnabled(true);
+            ui->portCombo->setEnabled(true);
+            ui->parityCombo->setEnabled(true);
+            ui->stopCombo->setEnabled(true);
+            ui->portOpenBtn->setText("Open");
+            disconnect(port,&QSerialPort::readyRead,this,&serialPortApp::printResults);
+            ui->statusBar->showMessage(port->portName() + QString(" closed on ") + QTime::currentTime().toString("hh:mm:ss"));
+        }
     }
 }
 
@@ -127,18 +134,38 @@ void serialPortApp::closeEvent(QCloseEvent *) {
 
 void serialPortApp::printResults()
 {
-    QByteArray infromSerial = port->readAll();
-    dispData = dispData + QString::fromUtf8(infromSerial);
+    QString timeStr("");
+    QString match("");
+    QByteArray infromSerial = port->readLine(); // this is by default hex data if convert to hex
+    QString str2check(infromSerial);
+    if (ui->outputTable->rowCount()>0) {
+        int c = ui->outputTable->rowCount();
+        for (int i = 0; i < c;i++) {
+            QCheckBox* box = qobject_cast<QCheckBox*>(ui->outputTable->cellWidget(i,0));
+            if (box->isChecked()) {
+                //ui->statusBar->showMessage(QString::number(ui->outputTable->rowCount()) + QString("Checked"));
+
+                QString sstr = ui->outputTable->item(i,1)->text();
+                if (str2check.contains(sstr)) {
+                    match = match + QString(" (Matching Sequence ") + QString::number(i) + QString(")");
+                }
+            }
+        }
+    }
+    if (ui->timeTicks->isChecked()) {
+        timeStr =  QTime::currentTime().toString("\nhh:mm:ss ->>");
+    }
+    dispData = dispData + match + timeStr + QString::fromUtf8(infromSerial);
+    QString hexStr = QString(infromSerial.toHex().constData());
+    hexStr.replace(QString("0a"),QString("0a\n"));
+    hexData  = hexData + match + timeStr + hexStr;
     if (tohex) {
-        QByteArray hexArray = dispData.toUtf8().toHex();
-        QString hexData  = QString(hexArray.constData());
-        hexData.replace(QString("0a"),QString("0a\n"));
-        //QString disp = QString(hexArray.constData()) + QString("\nNewLine");
         ui->mainData->setPlainText(hexData);
     } else {
         ui->mainData->setPlainText(dispData);
     }
     ui->mainData->verticalScrollBar()->setValue(ui->mainData->verticalScrollBar()->maximum());
+
 }
 
 void serialPortApp::on_mainData_destroyed()
@@ -158,19 +185,10 @@ void serialPortApp::changeEvent(QEvent* event) {
     }
 }
 
-void serialPortApp::on_input1_returnPressed()
-{
-    //QByteArray dataToSend = QByteArray::fromRawData(ui->input1->text().toStdString().c_str(),ui->input1->text().length());
-    //QString str = ui->input1->text() + QString("\n");
-    //port->write(str.toStdString().c_str(),ui->input1->text().length()+1);
-    //ui->input1->clear();
-}
-
 void serialPortApp::buttonClicked() {
     int i;
     for (i = 0; i < ui->inputTable->rowCount();i++) {
         if (sender()==ui->inputTable->cellWidget(i,0)) {
-            //QMessageBox::information(this,"info",QString::number(i));
             break;
         }
     }
@@ -236,5 +254,30 @@ void serialPortApp::on_dispHEX_toggled(bool checked)
     }
     else {
         tohex = false;
+    }
+}
+
+void serialPortApp::on_addOutput_clicked()
+{
+    int row = ui->outputTable->rowCount();
+    QCheckBox* chk = new QCheckBox(QString("Enable"),ui->inputTable);
+    chk->setObjectName(QString::number(row));
+    //connect(btn,&QPushButton::clicked,this,&serialPortApp::buttonClicked);
+    ui->outputTable->insertRow(row);
+    ui->outputTable->setItem(row,1,new QTableWidgetItem(QString::number(row)));
+    ui->outputTable->setCellWidget(row,0,chk);
+}
+
+void serialPortApp::on_outputTable_cellClicked(int row, int column)
+{
+    selectedX = row;
+    selectedY = column;
+}
+
+void serialPortApp::on_removeOutput_clicked()
+{
+    if(selectedX) {
+        ui->outputTable->removeRow(selectedX);
+        selectedX = -1;
     }
 }

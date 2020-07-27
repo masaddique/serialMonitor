@@ -8,7 +8,8 @@
 #include <QSerialPort>
 #include <QWindow>
 #include <QTableWidgetItem>
-#include <QVector>
+#include <QTimer>
+#include <QTime>
 //#include <QListWidget>
 
 
@@ -35,7 +36,7 @@ private slots:
     void printResults();
     void on_mainData_destroyed();
     void buttonClicked();
-    void on_input1_returnPressed();
+    //void on_input1_returnPressed();
 
     void on_inputTable_itemClicked(QTableWidgetItem *item);
 
@@ -51,13 +52,21 @@ private slots:
 
     void on_dispHEX_toggled(bool checked);
 
+    void on_addOutput_clicked();
+
+    void on_outputTable_cellClicked(int row, int column);
+
+    void on_removeOutput_clicked();
+
 private:
     Ui::serialPortApp *ui;
     QSerialPort* port;
     QString dispData; // this will store all the data to be displayed
+    QString hexData; // this will store all the data to be displayed in hex
     int selectedX;
     int selectedY;
     bool tohex;
+    QTimer* timer;
 };
 
 #endif // SERIALPORTAPP_H
