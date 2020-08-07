@@ -29,6 +29,7 @@ protected:
     void showEvent(QShowEvent *);
     void closeEvent(QCloseEvent *);
     void changeEvent(QEvent *);
+    void resizeEvent(QResizeEvent *);
 
 private slots:
     void on_exitBtn_clicked();

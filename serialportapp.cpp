@@ -3,9 +3,15 @@
 #include <QByteArray>
 #include <QScrollBar>
 #include <QSize>
+#include <QResizeEvent>
+#include <QRect>
+#include <QPoint>
 #include <string>
 #include <cstdio>
 #include <QTableWidgetItem>
+#include <QDebug>
+#include <QLayout>
+#include <QDesktopWidget>
 
 serialPortApp::serialPortApp(QWidget *parent) :
     QMainWindow(parent),
@@ -123,7 +129,9 @@ void serialPortApp::showEvent(QShowEvent *) {
     ui->mainData->clear();
     this->showMaximized();
     tohex = false;
-    dispData.clear();
+    dispData.clear();    
+    QRect qr = QApplication::desktop()->screenGeometry();
+    resize(qr.width(),qr.height());
 }
 
 void serialPortApp::closeEvent(QCloseEvent *) {
@@ -173,16 +181,32 @@ void serialPortApp::on_mainData_destroyed()
 
 }
 
-void serialPortApp::changeEvent(QEvent* event) {
+void serialPortApp::changeEvent(QEvent* ) {
+    /*
     if (event->type() == QEvent::WindowStateChange) {
-            int h = this->height();
-            int w = this->width();
-            ui->mainData->setGeometry(0.2*w,0.2*h,0.7*w,0.8*h);
-            ui->inputTable->setGeometry(0.05*w,0.20*h,0.1*w,0.3*h);
-            ui->outputTable->setGeometry(0.05*w,0.65*h,0.1*w,0.3*h);
-            ui->mainData->updateGeometry();
-            this->updateGeometry();
+        if (this->isMaximized()) {
+            qDebug() << "Window is maximized";
+            ui->dataLayout->setGeometry(QRect(100,100,200,200));
+            //ui->mainData->setGeometry(100,100,ui->mainData->width(),ui->mainData->height());
+        } else if (this->isMinimized()) {
+            qDebug() << "Window is minimized ";
+        } else {
+            qDebug() << "Window is restored" ;
+            //ui->mainData->setGeometry(0,0,ui->mainData->width(),ui->mainData->height());
+            ui->dataLayout->setGeometry(QRect(0,0,100,100));
+        }
     }
+    */
+}
+
+void serialPortApp::resizeEvent(QResizeEvent* evt) {
+    int h = evt->size().height();
+    int w = evt->size().width();
+    QMainWindow::resize(w,h);
+    ui->ctrlLayout->setGeometry(QRect(QPoint(0,0),QSize(w*0.95,h*0.05)));
+    ui->mainLayout->setGeometry(QRect(QPoint(0,0),QSize(w*0.95,h*0.9)));
+    ui->tableLayout->setGeometry(QRect(QPoint(0,0),QSize(w*0.2,h*0.8)));
+    ui->dataLayout->setGeometry(QRect(QPoint(w*0.2+10,0),QSize(w*0.75,h*0.8)));
 }
 
 void serialPortApp::buttonClicked() {
