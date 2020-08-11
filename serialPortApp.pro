@@ -14,10 +14,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        serialportapp.cpp
+        serialportapp.cpp \
+    cmdinputdlg.cpp
 
-HEADERS  += serialportapp.h
+HEADERS  += serialportapp.h \
+    cmdinputdlg.h
 
-FORMS    += serialportapp.ui
+FORMS    += serialportapp.ui \
+    cmdinputdlg.ui
 
 QMAKE_CXXFLAGS += -std=c++11

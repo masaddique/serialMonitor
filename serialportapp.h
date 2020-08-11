@@ -59,6 +59,12 @@ private slots:
 
     void on_removeOutput_clicked();
 
+    void datafromDlg(QString);
+
+    void on_inputTable_cellDoubleClicked(int row, int column);
+
+    void on_outputTable_cellDoubleClicked(int row, int column);
+
 private:
     Ui::serialPortApp *ui;
     QSerialPort* port;
@@ -66,6 +72,7 @@ private:
     QString hexData; // this will store all the data to be displayed in hex
     int selectedX;
     int selectedY;
+    int in_out_dlg;
     bool tohex;
     QTimer* timer;
 };

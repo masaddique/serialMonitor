@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QLayout>
 #include <QDesktopWidget>
+#include "cmdinputdlg.h"
 
 serialPortApp::serialPortApp(QWidget *parent) :
     QMainWindow(parent),
@@ -28,6 +29,15 @@ serialPortApp::~serialPortApp()
 void serialPortApp::on_exitBtn_clicked()
 {
     this->close();
+}
+
+void serialPortApp::datafromDlg(QString str) {
+    //QMessageBox::information(this,"Info",str);
+    if (in_out_dlg==1) {
+        ui->inputTable->item(selectedX,selectedY)->setText(str);
+    } else if (in_out_dlg==2) {
+        ui->outputTable->item(selectedX,selectedY)->setText(str);
+    }
 }
 
 void serialPortApp::on_portOpenBtn_clicked()
@@ -152,7 +162,6 @@ void serialPortApp::printResults()
             QCheckBox* box = qobject_cast<QCheckBox*>(ui->outputTable->cellWidget(i,0));
             if (box->isChecked()) {
                 //ui->statusBar->showMessage(QString::number(ui->outputTable->rowCount()) + QString("Checked"));
-
                 QString sstr = ui->outputTable->item(i,1)->text();
                 if (str2check.contains(sstr)) {
                     match = match + QString(" (Matching Sequence ") + QString::number(i) + QString(")");
@@ -242,7 +251,8 @@ void serialPortApp::on_addInput_clicked()
 
 void serialPortApp::on_removeInput_clicked()
 {
-    if(selectedX) {
+    qDebug() << "SelectedX: " << selectedX;
+    if(selectedX>-1) {
         ui->inputTable->removeRow(selectedX);
         selectedX = -1;
     }
@@ -265,9 +275,12 @@ void serialPortApp::on_dispASCII_toggled(bool checked)
 {
     if (checked) {
         tohex = false;
-    }
-    else {
-        tohex = true;
+        for (int i = 0; i < ui->inputTable->rowCount(); i++) {
+            ui->inputTable->item(i,1)->setText(QString::fromLocal8Bit(QByteArray::fromHex(ui->inputTable->item(i,1)->text().toLatin1())));
+        }
+        for (int i = 0; i < ui->outputTable->rowCount(); i++) {
+            ui->outputTable->item(i,1)->setText(QString::fromLocal8Bit(QByteArray::fromHex(ui->outputTable->item(i,1)->text().toLatin1())));
+        }
     }
 }
 
@@ -275,9 +288,14 @@ void serialPortApp::on_dispHEX_toggled(bool checked)
 {
     if (checked) {
         tohex = true;
-    }
-    else {
-        tohex = false;
+        for (int i = 0; i < ui->inputTable->rowCount(); i++) {
+            QByteArray ar(ui->inputTable->item(i,1)->text().toStdString().c_str());
+            ui->inputTable->item(i,1)->setText(QString::fromUtf8(ar.toHex()));
+        }
+        for (int i = 0; i < ui->outputTable->rowCount(); i++) {
+            QByteArray ar(ui->outputTable->item(i,1)->text().toStdString().c_str());
+            ui->outputTable->item(i,1)->setText(QString::fromUtf8(ar.toHex()));
+        }
     }
 }
 
@@ -300,8 +318,30 @@ void serialPortApp::on_outputTable_cellClicked(int row, int column)
 
 void serialPortApp::on_removeOutput_clicked()
 {
-    if(selectedX) {
+    if(selectedX>-1) {
         ui->outputTable->removeRow(selectedX);
         selectedX = -1;
     }
+}
+
+void serialPortApp::on_inputTable_cellDoubleClicked(int row, int column)
+{
+    cmdInputDlg* cmdDlg = new cmdInputDlg();
+    cmdDlg->setText(ui->inputTable->item(row,column)->text());
+    connect(cmdDlg,&cmdInputDlg::sendData,this,&serialPortApp::datafromDlg);
+    cmdDlg->show();
+    selectedX = row;
+    selectedY = column;
+    in_out_dlg = 1;
+}
+
+void serialPortApp::on_outputTable_cellDoubleClicked(int row, int column)
+{
+    cmdInputDlg* cmdDlg = new cmdInputDlg();
+    cmdDlg->setText(ui->outputTable->item(row,column)->text());
+    connect(cmdDlg,&cmdInputDlg::sendData,this,&serialPortApp::datafromDlg);
+    cmdDlg->show();
+    selectedX = row;
+    selectedY = column;
+    in_out_dlg = 2;
 }
